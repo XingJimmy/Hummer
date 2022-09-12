@@ -1,5 +1,7 @@
 package com.didi.hummer;
 
+import com.didi.hummer.adapter.font.IFontAdapter;
+import com.didi.hummer.adapter.font.impl.DefaultFontAdapter;
 import com.didi.hummer.adapter.http.IHttpAdapter;
 import com.didi.hummer.adapter.http.impl.DefaultHttpAdapter;
 import com.didi.hummer.adapter.imageloader.IImageLoaderAdapter;
@@ -46,6 +48,10 @@ public class HummerConfig {
      */
     private boolean isSupportRTL;
     /**
+     * 是否支持字节码（默认不支持）
+     */
+    private boolean isSupportBytecode;
+    /**
      * 字体文件Assets目录
      */
     private String fontsAssetsPath;
@@ -53,6 +59,10 @@ public class HummerConfig {
      * 网络请求适配器
      */
     private IHttpAdapter httpAdapter;
+    /**
+     * 字体适配器
+     */
+    private IFontAdapter fontAdapter;
     /**
      * 图片加载适配器
      */
@@ -82,8 +92,10 @@ public class HummerConfig {
         this.eventTracer = builder.eventTracer;
         this.exceptionCallback = builder.exceptionCallback;
         this.isSupportRTL = builder.isSupportRTL;
+        this.isSupportBytecode = builder.isSupportBytecode;
         this.fontsAssetsPath = builder.fontsAssetsPath;
         this.httpAdapter = builder.httpAdapter;
+        this.fontAdapter = builder.fontAdapter;
         this.imageLoaderAdapter = builder.imageLoaderAdapter;
         this.storageAdapter = builder.storageAdapter;
         this.navAdapter = builder.navAdapter;
@@ -98,21 +110,24 @@ public class HummerConfig {
 
     public JSLogger.Logger getJsLogger() {
         if (jsLogger == null) {
-            jsLogger = (level, msg) -> {};
+            jsLogger = (level, msg) -> {
+            };
         }
         return jsLogger;
     }
 
     public EventTracer.Trace getEventTracer() {
         if (eventTracer == null) {
-            eventTracer = (event, params) -> {};
+            eventTracer = (event, params) -> {
+            };
         }
         return eventTracer;
     }
 
     public ExceptionCallback getExceptionCallback() {
         if (exceptionCallback == null) {
-            exceptionCallback = e -> {};
+            exceptionCallback = e -> {
+            };
         }
         return exceptionCallback;
     }
@@ -121,6 +136,15 @@ public class HummerConfig {
         return isSupportRTL;
     }
 
+    public boolean isSupportBytecode() {
+        return isSupportBytecode;
+    }
+
+    /**
+     * 方法过时
+     * {@link #getFontAdapter()}
+     */
+    @Deprecated
     public String getFontsAssetsPath() {
         return fontsAssetsPath;
     }
@@ -130,6 +154,13 @@ public class HummerConfig {
             httpAdapter = new DefaultHttpAdapter();
         }
         return httpAdapter;
+    }
+
+    public IFontAdapter getFontAdapter() {
+        if (fontAdapter == null) {
+            fontAdapter = new DefaultFontAdapter(fontsAssetsPath);
+        }
+        return fontAdapter;
     }
 
     public IImageLoaderAdapter getImageLoaderAdapter() {
@@ -178,8 +209,10 @@ public class HummerConfig {
         private EventTracer.Trace eventTracer;
         private ExceptionCallback exceptionCallback;
         private boolean isSupportRTL;
+        private boolean isSupportBytecode;
         private String fontsAssetsPath;
         private IHttpAdapter httpAdapter;
+        private IFontAdapter fontAdapter;
         private IImageLoaderAdapter imageLoaderAdapter;
         private IStorageAdapter storageAdapter;
         private INavigatorAdapter navAdapter;
@@ -213,6 +246,16 @@ public class HummerConfig {
             return this;
         }
 
+        public Builder setSupportBytecode(boolean supportBytecode) {
+            isSupportBytecode = supportBytecode;
+            return this;
+        }
+
+        /**
+         * 方法过时
+         * {@link #setFontAdapter(IFontAdapter)}
+         */
+        @Deprecated
         public Builder setFontsAssetsPath(String fontsAssetsPath) {
             this.fontsAssetsPath = fontsAssetsPath;
             return this;
@@ -220,6 +263,11 @@ public class HummerConfig {
 
         public Builder setHttpAdapter(IHttpAdapter adapter) {
             httpAdapter = adapter;
+            return this;
+        }
+
+        public Builder setFontAdapter(IFontAdapter adapter) {
+            fontAdapter = adapter;
             return this;
         }
 
